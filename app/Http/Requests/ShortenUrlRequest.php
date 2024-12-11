@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 class ShortenUrlRequest extends FormRequest
 {
@@ -12,7 +13,7 @@ class ShortenUrlRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        return $this->user()->urls()->count() < 20;
     }
 
     /**
@@ -30,8 +31,8 @@ class ShortenUrlRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'original_url.required' => 'Email is required',
-            'original_url.url' => 'Email must be a valid URL',
+            'original_url.required' => 'Url is required',
+            'original_url.url' => 'Original Url must be a valid URL',
         ];
     }
 
@@ -43,5 +44,12 @@ class ShortenUrlRequest extends FormRequest
             'errors' => $errors,
             'message' => 'Validation failed'
         ], 422));
+    }
+
+    protected function failedAuthorization()
+    {
+        throw new HttpResponseException(response()->json([
+            'message' => 'You have reached the maximum number of URL shortenings'
+        ], 403));
     }
 }
