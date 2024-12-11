@@ -12,10 +12,9 @@ Route::get('/mocking', function () {
 
 Route::post('/register', [UserController::class, 'register']);
 
+Route::resource('urls', UrlController::class)->middleware('auth:sanctum');
 Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::post('/shorten', [UrlController::class, 'shorten'])->name('shorten')->middleware('throttle:10,1');
-    Route::get('/urls', [UrlController::class, 'index'])->name('urls.index');
-    Route::get('/urls/{url}', [UrlController::class, 'show'])->name('urls.show');
 });
 
 
