@@ -50,4 +50,12 @@ class UrlController extends Controller
         $url = Url::findOrFail($url);
         return response()->json(['url' => $url], 200);
     }
+
+    public function destroy(Request $request, $url)
+    {
+        $url = Url::findOrFail($url);
+        $url->delete();
+
+        return response()->json(['message' => 'Url deleted'], 200);
+    }
 }
